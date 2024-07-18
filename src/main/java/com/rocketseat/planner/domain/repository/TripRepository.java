@@ -1,6 +1,6 @@
-package com.rocketseat.planner.model.repository;
+package com.rocketseat.planner.domain.repository;
 
-import com.rocketseat.planner.model.entities.Trip;
+import com.rocketseat.planner.domain.entities.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

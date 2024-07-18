@@ -5,3 +5,5 @@ spring:
     url: jdbc:sqlserver://localhost:1433;databaseName=Planner;trustServerCertificate=true;
     username: sa
     password: Senha*01#
+  jackson:
+    property-naming-strategy: SNAKE_CASE

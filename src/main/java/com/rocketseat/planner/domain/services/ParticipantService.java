@@ -1,4 +1,4 @@
-package com.rocketseat.planner.model.services;
+package com.rocketseat.planner.domain.services;
 
 import org.springframework.stereotype.Service;
 

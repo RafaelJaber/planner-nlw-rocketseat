@@ -1,4 +1,4 @@
-package com.rocketseat.planner.model.entities;
+package com.rocketseat.planner.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

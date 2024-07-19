@@ -28,6 +28,10 @@ public class ParticipantService {
         );
     }
 
+    public List<Participant> findByTripId(UUID tripId) {
+        return participantRepository.findByTripId(tripId);
+    }
+
     public void registerParticipantsToTrip(List<String> participantsToInvite, UUID tripId) {
         Trip trip = tripService.findById(tripId);
         List<Participant> participants = participantsToInvite

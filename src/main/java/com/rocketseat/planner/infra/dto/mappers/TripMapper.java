@@ -3,6 +3,7 @@ package com.rocketseat.planner.infra.dto.mappers;
 
 import com.rocketseat.planner.infra.dto.request.TripRequestPayload;
 import com.rocketseat.planner.domain.entities.Trip;
+import com.rocketseat.planner.infra.dto.request.TripRequestUpdate;
 import com.rocketseat.planner.infra.dto.response.TripResponseBasic;
 import com.rocketseat.planner.infra.dto.response.TripResponseDetailed;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,17 @@ public class TripMapper {
                 .isConfirmed(false)
                 .ownerName(requestPayload.owner_name())
                 .ownerEmail(requestPayload.owner_email())
+                .build();
+    }
+
+    public Trip toEntity(TripRequestUpdate requestPayload) {
+        return Trip.builder()
+                .destination(requestPayload.destination())
+                .startsAt(LocalDateTime.parse(requestPayload.starts_at(), DateTimeFormatter.ISO_DATE_TIME))
+                .endsAt(LocalDateTime.parse(requestPayload.ends_at(), DateTimeFormatter.ISO_DATE_TIME))
+                .ownerName(requestPayload.owner_name())
+                .ownerEmail(requestPayload.owner_email())
+                .isConfirmed(requestPayload.is_confirmed())
                 .build();
     }
 

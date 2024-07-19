@@ -2,6 +2,7 @@ package com.rocketseat.planner.infra.controllers;
 
 import com.rocketseat.planner.infra.dto.mappers.TripMapper;
 import com.rocketseat.planner.infra.dto.request.TripRequestPayload;
+import com.rocketseat.planner.infra.dto.request.TripRequestUpdate;
 import com.rocketseat.planner.infra.dto.response.TripCreateResponse;
 import com.rocketseat.planner.domain.entities.Trip;
 import com.rocketseat.planner.domain.services.ParticipantService;
@@ -57,5 +58,21 @@ public class TripController {
         participantService.registerParticipantsToTrip(requestPayload.emails_to_invite(), createdTrip.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new TripCreateResponse(createdTrip.getId()));
+    }
+
+    @PatchMapping("/{tripId}/confirm-trip")
+    public ResponseEntity<Void> confirmTrip(@PathVariable UUID tripId) {
+        tripService.confirmTrip(tripId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping("{tripId}")
+    public ResponseEntity<TripResponseDetailed> createTrip(@RequestBody TripRequestUpdate requestPayload,
+                                                           @PathVariable UUID tripId) {
+        Trip trip = tripMapper.toEntity(requestPayload);
+        Trip updatedTrip = tripService.updateTrip(tripId, trip);
+
+        TripResponseDetailed responseDto = tripMapper.toResponseDetailed(updatedTrip);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

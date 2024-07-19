@@ -1,8 +1,12 @@
 package com.rocketseat.planner.infra.controllers;
 
+import com.rocketseat.planner.domain.entities.Activity;
 import com.rocketseat.planner.domain.entities.Participant;
+import com.rocketseat.planner.domain.services.ActivityService;
+import com.rocketseat.planner.infra.dto.mappers.ActivityMapper;
 import com.rocketseat.planner.infra.dto.mappers.ParticipantMapper;
 import com.rocketseat.planner.infra.dto.mappers.TripMapper;
+import com.rocketseat.planner.infra.dto.request.ActivityRequestPayload;
 import com.rocketseat.planner.infra.dto.request.ParticipantRequestInvite;
 import com.rocketseat.planner.infra.dto.request.TripRequestPayload;
 import com.rocketseat.planner.infra.dto.request.TripRequestUpdate;
@@ -23,19 +27,25 @@ public class TripController {
 
     private final TripService tripService;
     private final ParticipantService participantService;
+    private final ActivityService activityService;
     private final TripMapper tripMapper;
     private final ParticipantMapper participantMapper;
+    private final ActivityMapper activityMapper;
 
     public TripController(
             TripMapper tripMapper,
             TripService tripService,
             ParticipantService participantService,
-            ParticipantMapper participantMapper
+            ActivityService activityService,
+            ParticipantMapper participantMapper,
+            ActivityMapper activityMapper
     ) {
         this.tripMapper = tripMapper;
         this.tripService = tripService;
         this.participantService = participantService;
+        this.activityService = activityService;
         this.participantMapper = participantMapper;
+        this.activityMapper = activityMapper;
     }
 
     @GetMapping
@@ -69,6 +79,20 @@ public class TripController {
         return ResponseEntity.status(HttpStatus.OK).body(new ParticipantResponseOfTrip(responseTrip, responseParticipants));
     }
 
+    @GetMapping("/{tripId}/activities")
+    public ResponseEntity<ActivitiesResponseOfTrip> getTripActivities(@PathVariable UUID tripId) {
+        Trip trip = tripService.findById(tripId);
+        List<Activity> activities = activityService.findByTripId(trip.getId());
+
+        TripResponseDetailed responseTrip = tripMapper.toResponseDetailed(trip);
+        List<ActivityResponseDetailed> responseActivities = activities
+                .stream()
+                .map(activityMapper::toResponseDetailed)
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ActivitiesResponseOfTrip(responseTrip, responseActivities));
+    }
+
     @PostMapping
     public ResponseEntity<TripCreateResponse> createTrip(@RequestBody TripRequestPayload requestPayload) {
         Trip trip = tripMapper.toEntity(requestPayload);
@@ -76,6 +100,15 @@ public class TripController {
         participantService.registerParticipantsToTrip(requestPayload.emails_to_invite(), createdTrip.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new TripCreateResponse(createdTrip.getId()));
+    }
+
+    @PostMapping("/{tripId}/activities")
+    public ResponseEntity<Void> createTripActivity(@PathVariable UUID tripId,
+                                                   @RequestBody ActivityRequestPayload payload) {
+        Trip trip = tripService.findById(tripId);
+        activityService.create(payload, trip);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/{tripId}/confirm-trip")

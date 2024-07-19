@@ -2,6 +2,7 @@ package com.rocketseat.planner.infra.middleware;
 
 import com.rocketseat.planner.core.ErrorResponse;
 import com.rocketseat.planner.domain.errors.NotFoundResourceException;
+import com.rocketseat.planner.domain.errors.ParticipantAlreadyConfirmedException;
 import com.rocketseat.planner.domain.errors.TripAlreadyConfirmedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,12 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(TripAlreadyConfirmedException.class)
     public ResponseEntity<ErrorResponse> handleTripAlreadyConfirmedException(Exception ex, WebRequest request) {
+        ErrorResponse errorResponse = createErrorResponse(ex, request, HttpStatus.BAD_REQUEST, Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ParticipantAlreadyConfirmedException.class)
+    public ResponseEntity<ErrorResponse> handleParticipantAlreadyConfirmedException(Exception ex, WebRequest request) {
         ErrorResponse errorResponse = createErrorResponse(ex, request, HttpStatus.BAD_REQUEST, Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
